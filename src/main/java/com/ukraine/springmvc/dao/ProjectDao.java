@@ -19,4 +19,6 @@ public interface ProjectDao {
     void insertUser(Employee employee);
 
     List<Employee> findAllObject();
+
+    List<Employee> findAllEmployeeIntoProject(int projectId);
 }

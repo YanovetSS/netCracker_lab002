@@ -1,6 +1,6 @@
 package com.ukraine.springmvc.service;
 
-import com.ukraine.springmvc.dao.UserDao;
+import com.ukraine.springmvc.dao.impl.UserDao;
 import com.ukraine.springmvc.model.Employee;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;

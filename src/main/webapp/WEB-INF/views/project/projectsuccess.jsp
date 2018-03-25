@@ -12,14 +12,14 @@
 </head>
 <body>
 <div class="generic-container">
-    <%@include file="authheader.jsp" %>
+    <%@include file="../back/authheader.jsp" %>
 
     <div class="alert alert-success lead">
-        ${successwhenaddingusertoproject}
+        ${successproject}
     </div>
 
     <span class="well floatRight">
-			Go to <a href="<c:url value='/listProjects' />"> Project List</a>
+			Go to&nbsp;<a href="<c:url value='/listProjects' />">Project List</a>
 		</span>
 </div>
 </body>

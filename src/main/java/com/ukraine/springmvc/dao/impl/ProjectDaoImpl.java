@@ -1,5 +1,6 @@
-package com.ukraine.springmvc.dao;
+package com.ukraine.springmvc.dao.impl;
 
+import com.ukraine.springmvc.dao.ProjectDao;
 import com.ukraine.springmvc.model.Employee;
 import com.ukraine.springmvc.model.Project;
 import org.springframework.dao.DataAccessException;
@@ -22,7 +23,7 @@ public class ProjectDaoImpl implements ProjectDao {
 
     @Override
     public void update(Project project) {
-        String sql = "Update projects set project_id=?,projectsName=?,project_discuss=? specification=?,consept_sollution=?," +
+        String sql = "Update projects set project_id=?,projectsName=?,project_discuss=?, specification=?,consept_sollution=?," +
                 "tehnical_impl=?,start_project=?  where project_id =?";
         jdbcTemplate.update(sql, project.getProjectId(), project.getProjectName(), project.getProjectDiscuss(),
                 project.getProjectSpecification(), project.getProjectSullution(),
@@ -117,6 +118,27 @@ public class ProjectDaoImpl implements ProjectDao {
         });
 
         return listEmployee;
+    }
+
+    @Override
+    public List<Employee> findAllEmployeeIntoProject(int projectId) {
+        String sql = "select  objects.object from objects\n" +
+                "inner join user_projects up on up.obj_id = objects.object_id\n" +
+                "where project_id = " + projectId;
+
+        List<Employee> allEmployeeIntoProject = jdbcTemplate.query(sql, new RowMapper<Employee>() {
+
+            @Override
+            public Employee mapRow(ResultSet rs, int rowNum) throws SQLException {
+                Employee employee = new Employee();
+
+                employee.setObject(rs.getString("object"));
+                return employee;
+            }
+
+        });
+
+        return allEmployeeIntoProject;
     }
 }
 

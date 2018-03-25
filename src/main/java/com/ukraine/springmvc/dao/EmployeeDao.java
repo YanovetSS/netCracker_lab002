@@ -17,8 +17,7 @@ public interface EmployeeDao {
 
     void insertEmplyee(Employee employee);
 
-    //    void getUserListProjects(int employeeId);
-//    List<Employee> findAllObject();
-
     List<Employee> getAllRoles();
+
+    List<Employee> getAllCity();
 }

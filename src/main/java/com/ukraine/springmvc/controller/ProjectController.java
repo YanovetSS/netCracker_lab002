@@ -4,6 +4,8 @@ import com.ukraine.springmvc.dao.ProjectDao;
 import com.ukraine.springmvc.model.Employee;
 import com.ukraine.springmvc.model.Project;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -22,13 +24,12 @@ public class ProjectController {
     @Autowired
     private ProjectDao projectDao;
 
-    // для проектів
     @RequestMapping(value = "/listProjects")
     public ModelAndView listProjects(ModelAndView model) throws IOException {
         List<Project> listProjects = projectDao.projectList();
         model.addObject("listProjects", listProjects);
-        model.setViewName("projectsList");
-
+        model.setViewName("project/projectsList");
+        model.addObject("loggedinuser", getPrincipal());
         return model;
     }
 
@@ -43,18 +44,19 @@ public class ProjectController {
         Project project = new Project();
         model.addAttribute("project", project);
         model.addAttribute("edit", false);
-        return "newproject";
+        model.addAttribute("loggedinuser", getPrincipal());
+        return "project/newproject";
     }
 
     @RequestMapping(value = {"/newproject"}, method = RequestMethod.POST)
     public String saveUser(@Valid Project project, BindingResult result,
                            ModelMap model) {
         if (result.hasErrors()) {
-            return "newproject";
+            return "project/newproject";
         }
         projectDao.insertProject(project);
         model.addAttribute("successproject", "Project " + project.getProjectName() + " registered successfully");
-        return "projectsuccess";
+        return "project/projectsuccess";
     }
 
 
@@ -63,42 +65,64 @@ public class ProjectController {
         Project project = projectDao.getProject(projectId);
         model.addAttribute("project", project);
         model.addAttribute("edit", true);
-        return "newproject";
+        model.addAttribute("loggedinuser", getPrincipal());
+        return "project/newproject";
     }
 
     @RequestMapping(value = {"/edit-project-{projectId}"}, method = RequestMethod.POST)
     public String updateUser(@Valid @ModelAttribute("project") Project project, BindingResult result,
                              ModelMap model) {
         if (result.hasErrors()) {
-            return "newproject";
+            return "project/newproject";
         }
         projectDao.update(project);
-        model.addAttribute("successproject", "Project " + project.getProjectName() + " registered successfully");
-        return "projectsuccess";
+        model.addAttribute("successproject", "Project " + project.getProjectName() + " update successfully");
+        return "project/projectsuccess";
     }
-///для додавання юзера в проект
 
     @RequestMapping(value = {"/add-user-{projectId}"}, method = RequestMethod.GET)
     public String newUserInProject(ModelMap model) {
         Employee employee = new Employee();
         model.addAttribute("newuserinproject", employee);
         model.addAttribute("edit", false);
-        return "addusertoproject";
+        model.addAttribute("loggedinuser", getPrincipal());
+        return "project/addusertoproject";
     }
 
     @RequestMapping(value = {"/add-user-{projectId}"}, method = RequestMethod.POST)
-    public String newUserInProject(@Valid Employee employee, BindingResult result,
+    public String newUserInProject(@Valid @ModelAttribute("newuserinproject") Employee employee, BindingResult result,
                                    ModelMap model) {
-        if (result.hasErrors()) {
-            return "addusertoproject";
-        }
         projectDao.insertUser(employee);
         model.addAttribute("successwhenaddingusertoproject", "User adding successfully");
-        return "successwhenaddingusertoproject";
+
+        return "project/successwhenaddingusertoproject";
     }
+
+    @RequestMapping(value = {"/get-all-user-{projectId}"}, method = RequestMethod.GET)
+    public String getAllUserIntoProject(@PathVariable int projectId, ModelMap model) {
+        List<Employee>  employee= projectDao.findAllEmployeeIntoProject(projectId);
+        model.addAttribute("getAllUserIntoProject", employee);
+        model.addAttribute("edit", false);
+        model.addAttribute("loggedinuser", getPrincipal());
+        return "project/alluserintoproject";
+    }
+
 
     @ModelAttribute("objects")
     public List<Employee> findNameToAllObjects() {
         return projectDao.findAllObject();
+    }
+
+
+    private String getPrincipal() {
+        String userName = null;
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        if (principal instanceof UserDetails) {
+            userName = ((UserDetails) principal).getUsername();
+        } else {
+            userName = principal.toString();
+        }
+        return userName;
     }
 }

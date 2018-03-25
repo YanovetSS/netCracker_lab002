@@ -14,7 +14,7 @@
 
 <body>
 <div class="generic-container">
-    <%@include file="backtoemployeelistheader.jsp" %>
+    <%@include file="../back/backtoemployeelistheader.jsp" %>
     <div class="panel panel-default">
         <!-- Default panel contents -->
         <div class="panel-heading"><span class="lead">List of Project </span></div>
@@ -28,13 +28,7 @@
                 <th>Sollution</th>
                 <th>Implementation</th>
                 <th>Start</th>
-                <sec:authorize access="hasRole('ADMIN') or hasRole('DBA')">
-                    <th width="100"></th>
-                </sec:authorize>
-                <sec:authorize access="hasRole('ADMIN')">
-                    <th width="100"></th>
-                </sec:authorize>
-
+                <th class="center_text" colspan="4">Action</th>
             </tr>
             </thead>
             <tbody>
@@ -47,18 +41,23 @@
                     <td>${project.projectSullution}</td>
                     <td>${project.projectTechImpl}</td>
                     <td>${project.projectStart}</td>
-                    <sec:authorize access="hasRole('ADMIN') or hasRole('CUSTOMER')">
+                    <sec:authorize access="hasRole('ADMIN') or hasRole('CUST')">
                         <td><a href="<c:url value='/add-user-${project.projectId}' />"
-                               class="btn btn-success custom-width addu_btn">ADDU</a>
+                               class="btn btn-success custom-width addu_btn">AddU</a>
                         </td>
                     </sec:authorize>
-                    <sec:authorize access="hasRole('ADMIN') or hasRole('DBA')">
+                    <sec:authorize access="hasRole('ADMIN') or hasRole('CUST')">
                         <td><a href="<c:url value='/edit-project-${project.projectId}' />"
-                               class="btn btn-success custom-width">editP</a></td>
+                               class="btn btn-success custom-width">EditP</a></td>
+                    </sec:authorize>
+                    <sec:authorize access="hasRole('ADMIN') or hasRole('CUST')">
+                        <td><a href="<c:url value='/get-all-user-${project.projectId}' />"
+                               class="btn btn-success custom-width addu_btn">GetAllU</a>
+                        </td>
                     </sec:authorize>
                     <sec:authorize access="hasRole('ADMIN')">
                         <td><a href="<c:url value='/delete-project-${project.projectId}' />"
-                               class="btn btn-danger custom-width">deleteP</a></td>
+                               class="btn btn-danger custom-width">DeleteP</a></td>
                     </sec:authorize>
 
                 </tr>
@@ -66,22 +65,11 @@
             </tbody>
         </table>
     </div>
-    <sec:authorize access="hasRole('ADMIN')">
+    <sec:authorize access="hasRole('ADMIN') or hasRole('CUST')">
         <div class="well">
-            <a href="<c:url value='/newproject' />">Add New Project</a>
+            <a class="btn btn-primary" href="<c:url value='/newproject' />">Add New Project</a>
         </div>
     </sec:authorize>
-
-    <%--<script>--%>
-    <%--window.onload = function () {--%>
-    <%--var addu_btn_list = document.getElementsByClassName('addu_btn');--%>
-    <%--for (var i = 0; i < addu_btn_list.lenght; i++) {--%>
-    <%--addu_btn_list[i].onclick = function (i) {--%>
-
-    <%--}--%>
-    <%--}--%>
-    <%--}--%>
-    <%--</script>--%>
 
 </div>
 </body>

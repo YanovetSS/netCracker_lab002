@@ -1,5 +1,6 @@
-package com.ukraine.springmvc.dao;
+package com.ukraine.springmvc.dao.impl;
 
+import com.ukraine.springmvc.dao.EmployeeDao;
 import com.ukraine.springmvc.model.Employee;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -15,7 +16,6 @@ import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.List;
 
 public class EmployeeDaoImpl implements EmployeeDao {
@@ -38,8 +38,8 @@ public class EmployeeDaoImpl implements EmployeeDao {
             String sqlAttributes = "Update attributes set attr_id = ?, attr_name=?, object_type_id=? where attr_id=?";
             jdbcTemplate.update(sqlAttributes, employee.getAttrId(), employee.getAttrName(), employee.getoType(), employee.getAttrId());
 
-            String sqlParams = "Update params set mgr=?,hirerdate =?,sal =?,com=?,deptno=? where object_id=?";
-            jdbcTemplate.update(sqlParams, employee.getMgr(), parseTime(employee.getHirerDate()), employee.getSal(),
+            String sqlParams = "Update params set empno=?,mgr=?,hirerdate =?,sal =?,com=?,deptno=? where object_id=?";
+            jdbcTemplate.update(sqlParams, employee.getEmpno(), employee.getMgr(), parseTime(employee.getHirerDate()), employee.getSal(),
                     employee.getCom(), employee.getDeptno(), employee.getObjectId());
 
 
@@ -62,7 +62,7 @@ public class EmployeeDaoImpl implements EmployeeDao {
     @Override
     public Employee getEmployee(int employeeId) {
         String sql = "select o.object_id,o.object,o.object_type_id,att.attr_id,att.attr_name,\n" +
-                "p.mgr,p.hirerdate,p.sal,p.com,p.deptno,\n" +
+                "p.empno,p.mgr,p.hirerdate,p.sal,p.com,p.deptno,\n" +
                 "ud.login,ud.password,ud.type_id\n" +
                 "from objects o\n" +
                 "inner join user_datails ud on ud.object_id = o.object_id\n" +
@@ -81,14 +81,15 @@ public class EmployeeDaoImpl implements EmployeeDao {
                     employee.setoType(rs.getString("object_type_id"));
                     employee.setAttrId(rs.getInt("attr_id"));
                     employee.setAttrName(rs.getString("attr_name"));
+                    employee.setEmpno(rs.getInt("empno"));
                     employee.setMgr(rs.getInt("mgr"));
                     employee.setHirerDate(rs.getString("hirerdate"));
                     employee.setSal(rs.getFloat("sal"));
                     employee.setCom(rs.getFloat("com"));
                     employee.setDeptno(rs.getInt("deptno"));
                     employee.setLogin(rs.getString("login"));
-                    employee.setPassword(passwordEncoder.encode(rs.getString("password")));
-//                    employee.setPassword(rs.getString("password"));
+//                    employee.setPassword(passwordEncoder.encode(rs.getString("password")));
+                    employee.setPassword(rs.getString("password"));
                     employee.setRole(rs.getString("type_id"));
                     return employee;
                 }
@@ -103,9 +104,11 @@ public class EmployeeDaoImpl implements EmployeeDao {
         String sql = "select o.object_id, o.object,\n" +
                 "ot.o_type,\n" +
                 "attr.attr_name,\n" +
-                "p.mgr,p.hirerdate,p.sal,p.com,p.deptno\n" +
-                "from  objects o, object_types ot, attributes attr, params p\n" +
-                "where o.object_id = p.object_id and p.attr_id = attr.attr_id and o.object_type_id = ot.object_type_id\n";
+                "p.empno,p.mgr,p.hirerdate,p.sal,p.com,p.deptno,c.name\n" +
+                "from  objects o, object_types ot, attributes attr, params p,city c\n" +
+                "where o.object_id = p.object_id and p.attr_id = attr.attr_id\n" +
+                "and p.deptno = c.id\n" +
+                "and o.object_type_id = ot.object_type_id";
         List<Employee> listEmployee = jdbcTemplate.query(sql, new RowMapper<Employee>() {
 
             @Override
@@ -116,11 +119,13 @@ public class EmployeeDaoImpl implements EmployeeDao {
                 employee.setObject(rs.getString("object"));
                 employee.setoType(rs.getString("o_type"));
                 employee.setAttrName(rs.getString("attr_name"));
+                employee.setEmpno(rs.getInt("empno"));
                 employee.setMgr(rs.getInt("mgr"));
                 employee.setHirerDate(rs.getString("hirerdate"));
                 employee.setSal(rs.getFloat("sal"));
                 employee.setCom(rs.getInt("com"));
                 employee.setDeptno(rs.getInt("deptno"));
+                employee.setCity(rs.getString("name"));
                 return employee;
             }
 
@@ -139,9 +144,11 @@ public class EmployeeDaoImpl implements EmployeeDao {
                 "values(?,?,?)";
         jdbcTemplate.update(sql2, employee.getAttrId(), employee.getAttrName(), employee.getoType());
 
-        String sql3 = "insert into params(mgr,hirerdate,sal,com,deptno,attr_id,object_id)\n" +
-                "values(?,?,?,?,?,?,?)";
-        jdbcTemplate.update(sql3, employee.getMgr(), parseTime(employee.getHirerDate()), employee.getSal(), employee.getCom(), employee.getDeptno(), employee.getAttrId(), employee.getObjectId());
+        String sql3 = "insert into params(empno,mgr,hirerdate,sal,com,deptno,attr_id,object_id)\n" +
+                "values(?,?,?,?,?,?,?,?)";
+        jdbcTemplate.update(sql3, employee.getEmpno(), employee.getMgr(), parseTime(employee.getHirerDate()),
+                employee.getSal(), employee.getCom(), employee.getDeptno(), employee.getAttrId(),
+                employee.getObjectId());
 
         String sql4 = "insert into user_datails(login,password,object_id,type_id)\n" +
                 "values(?,?,?,?)";
@@ -152,7 +159,6 @@ public class EmployeeDaoImpl implements EmployeeDao {
 
     }
 
-    // парсим час при реєстрації
     private Timestamp parseTime(String str_date) {
         try {
             DateFormat formatter;
@@ -166,16 +172,22 @@ public class EmployeeDaoImpl implements EmployeeDao {
         }
     }
 
+    @Override
+    public List<Employee> getAllCity() {
+        String sql = "select id,name from city";
+        List<Employee> listEmployee = jdbcTemplate.query(sql, new RowMapper<Employee>() {
 
-//    @Override
-//    public void getUserListProjects(int employeeId) {
-//        String sql = "select projectsName from projects\n" +
-//                "inner join user_projects up on up.project_id = projects.project_id\n" +
-//                "where up.obj_id =?";
-//        jdbcTemplate.update(sql, employeeId);
-//    }
+            @Override
+            public Employee mapRow(ResultSet rs, int rowNum) throws SQLException {
+                Employee employee = new Employee();
+                employee.setDeptno(rs.getInt("id"));
+                employee.setCity(rs.getString("name"));
+                return employee;
+            }
 
-
+        });
+        return listEmployee;
+    }
 
     @Override
     public List<Employee> getAllRoles() {

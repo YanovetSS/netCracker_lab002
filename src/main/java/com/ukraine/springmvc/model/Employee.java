@@ -1,23 +1,37 @@
 package com.ukraine.springmvc.model;
 
-import java.sql.Timestamp;
-import java.util.Date;
+import org.hibernate.validator.constraints.NotEmpty;
+
+
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 public class Employee {
     //for list all employes
     private int objectId;
+
+    @Size(min = 3, max = 20)
     private String object;
+
+    @NotEmpty
     private String oType;
+
+    private int empno;
+
+    @NotEmpty
     private String attrName;
     private int mgr;
+    @NotEmpty
     private String hirerDate;
     private float sal;
     private float com;
     private int deptno;
-
-    //mauby more fiels
+    private String city;
+    @NotEmpty
     private String login;
+    @NotEmpty
     private String password;
+    @NotEmpty
     private String role;
     private int attrId;
     private int rolesId;
@@ -143,6 +157,22 @@ public class Employee {
 
     public void setProjectId(int projectId) {
         this.projectId = projectId;
+    }
+
+    public int getEmpno() {
+        return empno;
+    }
+
+    public void setEmpno(int empno) {
+        this.empno = empno;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
     }
 
     public Employee() {

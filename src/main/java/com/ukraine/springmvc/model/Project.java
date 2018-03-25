@@ -1,12 +1,22 @@
 package com.ukraine.springmvc.model;
 
+import org.hibernate.validator.constraints.NotEmpty;
+
+import javax.validation.constraints.Size;
+
 public class Project {
     private int projectId;
+    @Size(min = 4, max = 20)
     private String projectName;
+    @NotEmpty
     private String projectDiscuss;
+    @NotEmpty
     private String projectSpecification;
+    @NotEmpty
     private String projectSullution;
+    @NotEmpty
     private String projectTechImpl;
+    @NotEmpty
     private String projectStart;
     private int objectId;
 

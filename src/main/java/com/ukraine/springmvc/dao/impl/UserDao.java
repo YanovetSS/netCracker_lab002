@@ -1,4 +1,4 @@
-package com.ukraine.springmvc.dao;
+package com.ukraine.springmvc.dao.impl;
 
 import com.ukraine.springmvc.model.Employee;
 import org.springframework.beans.factory.annotation.Autowired;

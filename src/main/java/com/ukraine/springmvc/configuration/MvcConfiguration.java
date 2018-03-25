@@ -1,9 +1,9 @@
 package com.ukraine.springmvc.configuration;
 
 import com.ukraine.springmvc.dao.EmployeeDao;
-import com.ukraine.springmvc.dao.EmployeeDaoImpl;
+import com.ukraine.springmvc.dao.impl.EmployeeDaoImpl;
 import com.ukraine.springmvc.dao.ProjectDao;
-import com.ukraine.springmvc.dao.ProjectDaoImpl;
+import com.ukraine.springmvc.dao.impl.ProjectDaoImpl;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -17,6 +17,7 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
+import org.springframework.web.servlet.view.JstlView;
 
 import javax.sql.DataSource;
 
@@ -28,6 +29,7 @@ public class MvcConfiguration extends WebMvcConfigurerAdapter {
     @Bean
     public ViewResolver getViewResolver() {
         InternalResourceViewResolver resolver = new InternalResourceViewResolver();
+        resolver.setViewClass(JstlView.class);
         resolver.setPrefix("/WEB-INF/views/");
         resolver.setSuffix(".jsp");
         return resolver;
@@ -45,7 +47,6 @@ public class MvcConfiguration extends WebMvcConfigurerAdapter {
         dataSource.setUrl("jdbc:mysql://localhost:3306/netcracker");
         dataSource.setUsername("root");
         dataSource.setPassword("21031967");
-
         return dataSource;
     }
 
@@ -59,12 +60,9 @@ public class MvcConfiguration extends WebMvcConfigurerAdapter {
         return new ProjectDaoImpl(getDataSource());
     }
 
-
-    //for user login form
-
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
-        registry.addViewController("/login").setViewName("login");
+        registry.addViewController("/login").setViewName("reg/login");
         registry.setOrder(Ordered.HIGHEST_PRECEDENCE);
     }
 

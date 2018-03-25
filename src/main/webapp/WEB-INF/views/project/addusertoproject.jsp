@@ -14,7 +14,7 @@
 
 <body class="regisration_page">
 <div class="generic-container registration_content">
-    <%@include file="backtoprojectlistheader.jsp" %>
+    <%@include file="../back/backtoprojectlistheader.jsp" %>
     <form:form method="POST" modelAttribute="newuserinproject" class="form-hor izontal">
     <div class="well lead">Form for adding user to the project</div>
 
@@ -29,25 +29,21 @@
                 </div>
             </div>
         </div>
-
-
         <div class="row">
             <div class="form-actions floatRight">
                 <c:choose>
                     <c:when test="${edit}">
                         <input type="submit" value="Update" class="btn btn-primary btn-sm"/> or <a
-                            href="<c:url value='/listProjects' />">Cancel</a>
+                            class="btn btn-primary" href="<c:url value='/listProjects' />">Cancel</a>
                     </c:when>
                     <c:otherwise>
                         <input type="submit" value="Save user to project" class="btn btn-primary btn-sm"/> or <a
-                            href="<c:url value='/listProjects' />">Cancel</a>
+                            class="btn btn-primary" href="<c:url value='/listProjects' />">Cancel</a>
                     </c:otherwise>
                 </c:choose>
             </div>
         </div>
     </form:form>
-
-
 </div>
 </body>
 </html>

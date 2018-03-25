@@ -13,31 +13,29 @@
 </head>
 
 <body>
-<a href="#bottom_page" class="absolute_button"><img src="/static/image/down-arrow.png" alt=""></a>
+<sec:authorize access="hasRole('ADMIN')">
+    <a href="#bottom_page" class="absolute_button"><img src="/static/image/down-arrow.png" alt=""></a>
+</sec:authorize>
+
 <div class="generic-container">
-    <%@include file="authheader.jsp" %>
+    <%@include file="../back/authheader.jsp" %>
     <div class="panel panel-default">
         <!-- Default panel contents -->
         <div class="panel-heading"><span class="lead">List of Users </span></div>
         <table class="table table-hover">
             <thead>
             <tr>
-                <th>object_id</th>
-                <th>object</th>
-                <th>o_type</th>
-                <th>attr_name</th>
-                <th>mgr</th>
-                <th>hirerdate</th>
-                <th>sal</th>
-                <th>com</th>
-                <th>deptno</th>
-                <sec:authorize access="hasRole('ADMIN') or hasRole('DBA')">
-                    <th width="100"></th>
-                </sec:authorize>
-                <sec:authorize access="hasRole('ADMIN')">
-                    <th width="100"></th>
-                </sec:authorize>
-
+                <th>Id</th>
+                <th>Name</th>
+                <th>Job</th>
+                <th>Attribute</th>
+                <th>Empno</th>
+                <th>Mgr</th>
+                <th>Hirerdate</th>
+                <th>Sal</th>
+                <th>Com</th>
+                <th>Deptno</th>
+                <th class="center_text" colspan="2">Action</th>
             </tr>
             </thead>
             <tbody>
@@ -47,14 +45,13 @@
                     <td>${employee.object}</td>
                     <td>${employee.oType}</td>
                     <td>${employee.attrName}</td>
+                    <td>${employee.empno}</td>
                     <td>${employee.mgr}</td>
                     <td>${employee.hirerDate}</td>
                     <td>${employee.sal}</td>
                     <td>${employee.com}</td>
-                    <td>${employee.deptno}</td>
-
-
-                    <sec:authorize access="hasRole('ADMIN') or hasRole('DBA')">
+                    <td>${employee.city}</td>
+                    <sec:authorize access="hasRole('ADMIN') or hasRole('CUST')">
                         <td><a href="<c:url value='/edit-user-${employee.objectId}' />"
                                class="btn btn-success custom-width">edit</a></td>
                     </sec:authorize>
@@ -69,14 +66,15 @@
             </tbody>
         </table>
     </div>
-    <sec:authorize access="hasRole('ADMIN')">
-        <div class="well">
-            <a id="bottom_page" href="<c:url value='/newuser' />">Add New User</a>
-            <a href="<c:url value='/listProjects' />">Project LIST</a>
-        </div>
-    </sec:authorize>
 
-
+    <div class="well">
+        <sec:authorize access="hasRole('ADMIN')">
+            <a class="btn btn-primary" id="bottom_page" href="<c:url value='/newuser' />">Add New User</a>
+        </sec:authorize>
+        <sec:authorize access="hasRole('ADMIN') or hasRole('CUST') or hasRole('USER')">
+            <a class="btn btn-primary" href="<c:url value='/listProjects' />">Project LIST</a>
+        </sec:authorize>
+    </div>
 
 </div>
 </body>

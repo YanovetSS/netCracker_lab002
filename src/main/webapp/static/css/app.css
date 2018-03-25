@@ -86,6 +86,7 @@ body, #mainWrapper, .form-control{
 
 .authbar{
 	margin-bottom:15px;
+	padding-bottom: 10px;
 }
 
 .registration_content {
@@ -117,9 +118,17 @@ body, #mainWrapper, .form-control{
 
 .well {
 	display: flex;
-	justify-content: center;
+	justify-content: flex-start;
 }
 
-.well > a:nth-child(2) {
-	margin: auto;
+.well > a {
+	margin-right: 10px;
+}
+
+.well > a:focus {
+	outline: none;
+}
+
+.center_text {
+	text-align: center;
 }
